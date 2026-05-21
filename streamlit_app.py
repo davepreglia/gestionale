@@ -25,26 +25,265 @@ if os.path.exists(dotenv_path):
 # Custom styles for premium look
 st.markdown("""
 <style>
-    .main {
-        background-color: #f8f9fa;
+    /* Import Inter Google Font */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    
+    /* General styles override */
+    html, body, [data-testid="stAppViewContainer"], .stApp {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+        background-color: #F8FAFC !important;
+        color: #334155 !important;
     }
+    
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Inter', sans-serif !important;
+        font-weight: 700 !important;
+        color: #1E293B !important;
+        letter-spacing: -0.02em !important;
+    }
+    
+    /* Custom Card Style */
     .stCard {
-        background-color: white;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        margin-bottom: 20px;
-        border-left: 5px solid #0056b3;
+        background-color: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 8px !important;
+        padding: 1.5rem !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
+        margin-bottom: 1.5rem !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
     }
+    .stCard:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+    }
+    
     .metric-value {
-        font-size: 24px;
-        font-weight: bold;
-        color: #2b2d42;
+        font-size: 1.8rem !important;
+        font-weight: 700 !important;
+        color: #003366 !important;
+        margin-top: 0.25rem !important;
     }
     .metric-label {
-        font-size: 14px;
-        color: #8d99ae;
-        text-transform: uppercase;
+        font-size: 0.75rem !important;
+        color: #64748B !important;
+        text-transform: uppercase !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.05em !important;
+    }
+    
+    /* Button overrides */
+    div.stButton > button, div.stDownloadButton > button {
+        background-color: #003366 !important;
+        color: #ffffff !important;
+        border: 1px solid #003366 !important;
+        border-radius: 6px !important;
+        padding: 0.6rem 1.2rem !important;
+        font-weight: 600 !important;
+        transition: all 0.2s ease !important;
+        width: 100% !important;
+    }
+    div.stButton > button:hover, div.stDownloadButton > button:hover {
+        background-color: #002244 !important;
+        border-color: #002244 !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(0, 51, 102, 0.15) !important;
+    }
+    
+    /* Form submit button overrides */
+    div[data-testid="stFormSubmitButton"] > button {
+        background-color: #003366 !important;
+        color: #ffffff !important;
+        border: 1px solid #003366 !important;
+        border-radius: 6px !important;
+        padding: 0.6rem 1.2rem !important;
+        font-weight: 600 !important;
+        width: 100% !important;
+    }
+    div[data-testid="stFormSubmitButton"] > button:hover {
+        background-color: #002244 !important;
+        border-color: #002244 !important;
+    }
+    
+    /* Sidebar customization */
+    section[data-testid="stSidebar"] {
+        background-color: #FFFFFF !important;
+        border-right: 1px solid #E2E8F0 !important;
+    }
+    section[data-testid="stSidebar"] hr {
+        border-color: #E2E8F0 !important;
+        margin: 1.5rem 0 !important;
+    }
+    
+    /* Style radio navigation list */
+    div[data-testid="stSidebar"] div.stRadio {
+        margin-top: 1rem !important;
+    }
+    div[data-testid="stSidebar"] div.stRadio > label {
+        display: none !important;
+    }
+    div[data-testid="stSidebar"] div.stRadio div[role="radiogroup"] {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.25rem !important;
+    }
+    div[data-testid="stSidebar"] div.stRadio div[role="radiogroup"] label {
+        display: flex !important;
+        align-items: center !important;
+        padding: 0.6rem 1rem !important;
+        border-radius: 6px !important;
+        background-color: transparent !important;
+        color: #334155 !important;
+        transition: all 0.15s ease !important;
+        cursor: pointer !important;
+        border: none !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }
+    div[data-testid="stSidebar"] div.stRadio div[role="radiogroup"] label:hover {
+        background-color: #F1F5F9 !important;
+        color: #1E293B !important;
+    }
+    div[data-testid="stSidebar"] div.stRadio div[role="radiogroup"] label[data-checked="true"] {
+        background-color: #003366 !important;
+        color: #FFFFFF !important;
+        font-weight: 600 !important;
+    }
+    div[data-testid="stSidebar"] div.stRadio div[role="radiogroup"] label div[role="presentation"] {
+        display: none !important;
+    }
+    div[data-testid="stSidebar"] div.stRadio div[role="radiogroup"] label div:first-child:not(:last-child) {
+        display: none !important;
+    }
+    div[data-testid="stSidebar"] div.stRadio div[role="radiogroup"] label div[data-testid="stMarkdownContainer"] {
+        padding-left: 0 !important;
+        color: inherit !important;
+    }
+    
+    /* Sidebar logout button override */
+    div[data-testid="stSidebar"] button {
+        background-color: transparent !important;
+        color: #BE123C !important;
+        border: 1px solid #BE123C !important;
+        border-radius: 6px !important;
+        font-weight: 600 !important;
+        transition: all 0.2s ease !important;
+    }
+    div[data-testid="stSidebar"] button:hover {
+        background-color: #BE123C !important;
+        color: #ffffff !important;
+        border-color: #BE123C !important;
+        box-shadow: 0 4px 12px rgba(190, 18, 60, 0.15) !important;
+    }
+    
+    /* Input field customizations */
+    div[data-baseweb="input"] {
+        border-radius: 8px !important;
+        border: 1px solid #E2E8F0 !important;
+        background-color: #FFFFFF !important;
+        transition: all 0.2s !important;
+    }
+    div[data-baseweb="input"]:focus-within {
+        border-color: #003366 !important;
+        box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.1) !important;
+    }
+    input {
+        color: #1E293B !important;
+    }
+    
+    /* Custom style for the login header and split screen components */
+    .login-top-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: #003366;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      width: 100%;
+    }
+    .login-top-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .login-top-brand-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+    }
+    .login-top-brand-sub {
+      font-size: 0.65rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .login-top-subtitle {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.85rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.2);
+      padding-left: 12px;
+      margin-left: 4px;
+    }
+    
+    .login-col-right-styled {
+        background: radial-gradient(circle at 10% 20%, rgba(0, 51, 102, 0.03) 0%, rgba(248, 250, 252, 1) 100%), linear-gradient(135deg, rgba(0, 229, 255, 0.02) 0%, rgba(138, 43, 226, 0.02) 100%);
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 2.5rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .login-feature-card {
+        background: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 8px !important;
+        padding: 1.25rem !important;
+        margin-bottom: 1.25rem !important;
+        box-shadow: 0 4px 15px -2px rgba(0, 51, 102, 0.02) !important;
+        transition: transform 0.2s, box-shadow 0.2s !important;
+    }
+    .login-feature-card:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px -3px rgba(0, 51, 102, 0.05) !important;
+    }
+    .login-feature-badge {
+        display: inline-flex !important;
+        align-items: center !important;
+        font-size: 0.72rem !important;
+        font-weight: 600 !important;
+        color: #003366 !important;
+        background: rgba(0, 51, 102, 0.05) !important;
+        padding: 2px 8px !important;
+        border-radius: 20px !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    /* Info Box */
+    .info-box-demo {
+        margin-top: 1.5rem;
+        padding: 1.25rem;
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+    }
+    
+    /* Table modifications */
+    div[data-testid="stTable"] {
+        border-radius: 8px !important;
+        overflow: hidden !important;
+        border: 1px solid #E2E8F0 !important;
+    }
+    
+    /* Alert cards override */
+    div[data-testid="stNotification"] {
+        border-radius: 8px !important;
+        border: 1px solid #E2E8F0 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -462,16 +701,52 @@ def check_login(email, password):
 
 # ── LOGIN PAGE ────────────────────────────────────────────────────────────────
 if not st.session_state.logged_in:
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.markdown(f"<h1 style='text-align: center;'>{curr_trans['title']}</h1>", unsafe_allow_html=True)
-        st.markdown(f"<p style='text-align: center; color: #6c757d;'>{curr_trans['subtitle']}</p>", unsafe_allow_html=True)
+    # Top header containing PoliSync AI brand, Politecnico di Torino, logo and online status
+    logo_path = os.path.join(os.path.dirname(__file__), "policost", "frontend", "src", "assets", "logo.png")
+    logo_base64 = ""
+    if os.path.exists(logo_path):
+        import base64
+        try:
+            with open(logo_path, "rb") as f:
+                logo_base64 = f"data:image/png;base64,{base64.b64encode(f.read()).decode()}"
+        except Exception:
+            pass
+            
+    logo_img_html = f'<img src="{logo_base64}" style="height:36px; object-fit:contain; filter:brightness(0) invert(1);">' if logo_base64 else '<div style="width:32px; height:32px; background:#ffffff; color:#003366; border-radius:6px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem;">P</div>'
+
+    st.markdown(f"""
+    <header class="login-top-header">
+      <div class="login-top-brand">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          {logo_img_html}
+          <div style="display: flex; flex-direction: column;">
+            <span class="login-top-brand-title">PoliSync AI</span>
+            <span class="login-top-brand-sub">Politecnico di Torino</span>
+          </div>
+          <span class="login-top-subtitle">Department Integration & Sync Platform</span>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <span class="login-top-status-label">System Status:</span>
+        <span style="background: #E2FBE8; color: #1B873F; border: 1px solid #C4F4CE; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">● Online</span>
+      </div>
+    </header>
+    """, unsafe_allow_html=True)
+    
+    col_left, col_right = st.columns([1.2, 1.8])
+    
+    with col_left:
+        st.markdown(f"""
+        <div style="margin-bottom: 2rem;">
+          <h2 style="font-size: 2rem; font-weight: 700; color: #1E293B; letter-spacing: -0.03em; margin-bottom: 0.5rem;">Sign In</h2>
+          <p style="color: #64748B;">Welcome to the PoliSync enterprise research integration portal.</p>
+        </div>
+        """, unsafe_allow_html=True)
         
         with st.form("login_form"):
-            st.subheader(curr_trans["login_header"])
-            email_input = st.text_input(curr_trans["username"])
-            pass_input = st.text_input(curr_trans["password"], type="password")
-            submitted = st.form_submit_button(curr_trans["login_button"])
+            email_input = st.text_input(curr_trans["username"], placeholder="nome.cognome@polito.it")
+            pass_input = st.text_input(curr_trans["password"], type="password", placeholder="••••••••")
+            submitted = st.form_submit_button("Sign In")
             
             if submitted:
                 if check_login(email_input, pass_input):
@@ -480,32 +755,95 @@ if not st.session_state.logged_in:
                 else:
                     st.error(curr_trans["login_failed"])
         
+        # Test Credentials Info Box
+        st.markdown(f"""
+        <div class="info-box-demo">
+          <div style="font-size: 0.75rem; font-weight: 600; color: #003366; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem;">
+            Demo Test Credentials
+          </div>
+          <div style="font-size: 0.8rem; color: #475569; line-height: 1.6;">
+            <div><strong>Admin:</strong> admin@polito.it <span style="color:#94A3B8;">/</span> Admin123!</div>
+            <div><strong>Project Manager:</strong> pm@polito.it <span style="color:#94A3B8;">/</span> Pm12345!</div>
+            <div><strong>Financial:</strong> giulia.bianchi@polito.it <span style="color:#94A3B8;">/</span> Polito2024!</div>
+            <div><strong>Staff:</strong> luca.ferrari@polito.it <span style="color:#94A3B8;">/</span> Polito2024!</div>
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
         # Demo Quick Access Card
-        st.markdown("---")
+        st.markdown("<br>", unsafe_allow_html=True)
         st.subheader(curr_trans["demo_login"])
         col_demo1, col_demo2, col_demo3 = st.columns(3)
         with col_demo1:
-            if st.button("Admin"):
+            if st.button("Admin", key="demo_admin_btn"):
                 if check_login("admin@polito.it", "Admin123!"):
                     st.rerun()
         with col_demo2:
-            if st.button("Project Manager"):
+            if st.button("PM", key="demo_pm_btn"):
                 if check_login("pm@polito.it", "Pm12345!"):
                     st.rerun()
         with col_demo3:
-            if st.button("Finance Admin"):
+            if st.button("Finance", key="demo_fin_btn"):
                 if check_login("giulia.bianchi@polito.it", "Polito2024!"):
                     st.rerun()
+                    
+    with col_right:
+        st.markdown(f"""
+        <div class="login-col-right-styled">
+          <h2 style="font-size: 2.3rem; font-weight: 800; color: #003366; letter-spacing: -0.04em; line-height: 1.2; margin-bottom: 1rem;">
+            Next-Generation Research<br>Management & Sync
+          </h2>
+          <p style="font-size: 1rem; color: #475569; line-height: 1.6; margin-bottom: 2rem;">
+            Streamlining administrative compliance and financial transparency for researchers and departments at Politecnico di Torino through automated sync pipelines and AI auditing.
+          </p>
+          
+          <div class="login-feature-card">
+            <span class="login-feature-badge">AI Auditing Engine</span>
+            <h3 style="font-size: 1.05rem; font-weight: 600; color: #1E293B; margin-bottom: 0.25rem;">Automatic Double-Invoicing Detection</h3>
+            <p style="font-size: 0.85rem; color: #475569; margin: 0;">
+              Real-time validation against our central repository to prevent duplication and ensure compliance with external audit standards.
+            </p>
+          </div>
+          
+          <div class="login-feature-card">
+            <span class="login-feature-badge">ERP Integration</span>
+            <h3 style="font-size: 1.05rem; font-weight: 600; color: #1E293B; margin-bottom: 0.25rem;">Medallion Architecture Pipeline</h3>
+            <p style="font-size: 0.85rem; color: #475569; margin: 0;">
+              Seamless synchronization connecting local expenses to institutional budgets, structured in Raw (Bronze), Clean (Silver), and Verified (Gold) layers.
+            </p>
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
     st.stop()
 
 # ── APP LAYOUT & SIDEBAR ──────────────────────────────────────────────────────
 user = st.session_state.user
 roles = st.session_state.roles
 
-st.sidebar.markdown(f"### {curr_trans['title']}")
-st.sidebar.write(f"🧑 **{user['first_name']} {user['last_name']}**")
-st.sidebar.write(f"📧 `{user['email']}`")
-st.sidebar.write(f"🎭 Ruoli: `{', '.join(roles)}`")
+# Sidebar brand header styled matching React sidebar-logo
+st.sidebar.markdown("""
+<div style="display: flex; align-items: center; gap: 12px; padding: 0.5rem 0; margin-bottom: 1.5rem;">
+  <div style="width: 32px; height: 32px; background: #003366; color: #ffffff; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem;">P</div>
+  <div style="display: flex; flex-direction: column;">
+    <span style="font-size: 1.1rem; font-weight: 700; color: #003366; letter-spacing: -0.02em; line-height: 1.2;">PoliSync AI</span>
+    <span style="font-size: 0.65rem; color: #64748B; font-family: monospace;">v1.0.0-gold</span>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+# User details styled matching React sidebar-user
+initials = f"{user['first_name'][0]}{user['last_name'][0]}".upper()
+role_name = roles[0].replace("_", " ").title() if roles else "User"
+
+st.sidebar.markdown(f"""
+<div style="display: flex; align-items: center; gap: 12px; padding: 0.75rem 1rem; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; margin-bottom: 1.5rem;">
+  <div style="width: 36px; height: 36px; background: #E2E8F0; color: #003366; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.85rem; font-family: monospace;">{initials}</div>
+  <div style="display: flex; flex-direction: column; min-width: 0; flex: 1;">
+    <span style="font-size: 0.88rem; font-weight: 600; color: #1E293B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{user['first_name']} {user['last_name']}</span>
+    <span style="font-size: 0.72rem; color: #64748B; font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{role_name}</span>
+  </div>
+</div>
+""", unsafe_allow_html=True)
 
 # Navigation Menu
 menu_options = [
@@ -596,7 +934,15 @@ if selected_menu == curr_trans["menu_dashboard"]:
             fig_pie = px.pie(cat_df, values='total_amount', names='category_name', 
                              title=curr_trans['spent_by_cat'], hole=0.4,
                              color_discrete_sequence=px.colors.qualitative.Pastel)
-            fig_pie.update_layout(showlegend=True)
+            fig_pie.update_layout(
+                showlegend=True,
+                font_family="Inter, sans-serif",
+                plot_bgcolor="rgba(0,0,0,0)",
+                paper_bgcolor="rgba(0,0,0,0)",
+                title_font=dict(size=16, color="#1E293B", weight="bold"),
+                legend=dict(font=dict(size=12, color="#475569")),
+                margin=dict(t=40, b=20, l=20, r=20)
+            )
             st.plotly_chart(fig_pie, use_container_width=True)
         else:
             st.info("Nessuna spesa approvata disponibile per i grafici.")
@@ -613,10 +959,23 @@ if selected_menu == curr_trans["menu_dashboard"]:
         
         if len(proj_spent_df) > 0:
             fig_bar = go.Figure(data=[
-                go.Bar(name='Allocated Budget', x=proj_spent_df['project_code'], y=proj_spent_df['total_budget'], marker_color='#0056b3'),
-                go.Bar(name='Spent', x=proj_spent_df['project_code'], y=proj_spent_df['spent'], marker_color='#e63946')
+                go.Bar(name='Allocated Budget', x=proj_spent_df['project_code'], y=proj_spent_df['total_budget'], marker_color='#003366'),
+                go.Bar(name='Spent', x=proj_spent_df['project_code'], y=proj_spent_df['spent'], marker_color='#BE123C')
             ])
-            fig_bar.update_layout(barmode='group', title=curr_trans['budget_vs_spent'], xaxis_title="Progetto / Project", yaxis_title="€")
+            fig_bar.update_layout(
+                barmode='group',
+                title=curr_trans['budget_vs_spent'],
+                xaxis_title="Progetto / Project",
+                yaxis_title="€",
+                font_family="Inter, sans-serif",
+                plot_bgcolor="rgba(0,0,0,0)",
+                paper_bgcolor="rgba(0,0,0,0)",
+                title_font=dict(size=16, color="#1E293B", weight="bold"),
+                xaxis=dict(gridcolor="#F1F5F9", title_font=dict(size=13, color="#475569"), tickfont=dict(color="#64748B")),
+                yaxis=dict(gridcolor="#F1F5F9", title_font=dict(size=13, color="#475569"), tickfont=dict(color="#64748B")),
+                legend=dict(font=dict(size=12, color="#475569")),
+                margin=dict(t=40, b=40, l=40, r=20)
+            )
             st.plotly_chart(fig_bar, use_container_width=True)
 
 # ── SUBPAGE: PROJECTS & BUDGETS ───────────────────────────────────────────────

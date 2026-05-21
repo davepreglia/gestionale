@@ -438,7 +438,7 @@ def check_login(email, password):
         GROUP BY u.id
     """
     # Adjust role concat for PostgreSQL vs SQLite
-    if "postgresql" in engine.driver:
+    if "postgresql" in engine.name:
         query = """
             SELECT u.*, string_agg(r.name, ',') as role_names 
             FROM users u

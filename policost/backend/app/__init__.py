@@ -1,0 +1,48 @@
+import os
+from flask import Flask
+from dotenv import load_dotenv
+
+from .config import config_map
+from .extensions import db, migrate, jwt, cors, limiter
+
+
+def create_app(env: str = None) -> Flask:
+    load_dotenv()
+    env = env or os.environ.get("FLASK_ENV", "development")
+    app = Flask(__name__)
+    app.config.from_object(config_map[env])
+
+    # ── Extensions ─────────────────────────────────────────────────────────
+    db.init_app(app)
+    migrate.init_app(app, db)
+    jwt.init_app(app)
+    cors.init_app(app, resources={r"/api/*": {"origins": app.config["CORS_ORIGINS"]}},
+                  supports_credentials=True)
+    limiter.init_app(app)
+
+    # ── Ensure upload folder exists ─────────────────────────────────────────
+    upload_dir = os.path.join(app.root_path, "..", app.config["UPLOAD_FOLDER"])
+    os.makedirs(upload_dir, exist_ok=True)
+
+    # ── Register blueprints ─────────────────────────────────────────────────
+    from .api.auth import auth_bp
+    from .api.users import users_bp
+    from .api.expenses import expenses_bp
+    from .api.projects import projects_bp
+    from .api.approvals import approvals_bp
+    from .api.documents import documents_bp
+    from .api.departments import departments_bp
+    from .api.analytics import analytics_bp
+
+    for bp in [auth_bp, users_bp, expenses_bp, projects_bp,
+               approvals_bp, documents_bp, departments_bp, analytics_bp]:
+        app.register_blueprint(bp, url_prefix="/api")
+
+    # ── Shell context ───────────────────────────────────────────────────────
+    @app.shell_context_processor
+    def ctx():
+        from .models import User, Role, Department, Project, Expense, Approval
+        return dict(db=db, User=User, Role=Role, Department=Department,
+                    Project=Project, Expense=Expense, Approval=Approval)
+
+    return app

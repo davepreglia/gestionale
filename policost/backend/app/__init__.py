@@ -21,8 +21,16 @@ def create_app(env: str = None) -> Flask:
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
+    import re
     origins_str = app.config["CORS_ORIGINS"]
-    origins = [o.strip() for o in origins_str.split(",")] if origins_str else "*"
+    if origins_str:
+        origins = [o.strip() for o in origins_str.split(",")]
+    else:
+        origins = ["http://localhost:5173", "http://localhost:5174"]
+    
+    # Automatically authorize any onrender.com subdomains in production
+    origins.append(re.compile(r"https://.*\.onrender\.com"))
+    
     cors.init_app(app, resources={r"/api/*": {"origins": origins}},
                   supports_credentials=True)
     limiter.init_app(app)

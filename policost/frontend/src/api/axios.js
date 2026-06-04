@@ -1,7 +1,21 @@
 import axios from 'axios'
 import { useAuthStore } from '../store/authStore'
 
-const baseURL = import.meta.env.VITE_API_URL || '/api'
+const getBaseURL = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL
+  }
+  if (typeof window !== 'undefined' && window.location.hostname.endsWith('.onrender.com')) {
+    const hostname = window.location.hostname
+    if (hostname.includes('-frontend')) {
+      return `https://${hostname.replace('-frontend', '-backend')}/api`
+    }
+    return 'https://policost-backend.onrender.com/api'
+  }
+  return '/api'
+}
+
+const baseURL = getBaseURL()
 const api = axios.create({ baseURL })
 
 api.interceptors.request.use(config => {

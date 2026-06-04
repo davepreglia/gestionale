@@ -25,7 +25,10 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        "DATABASE_URL",
+        "postgresql://neondb_owner:npg_RXMiH5EI6OZU@ep-bitter-lake-aqojmnwa.c-8.us-east-1.aws.neon.tech/neondb?sslmode=require"
+    )
 
 
 class TestingConfig(Config):

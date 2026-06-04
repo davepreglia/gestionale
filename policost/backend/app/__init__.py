@@ -8,7 +8,8 @@ from .extensions import db, migrate, jwt, cors, limiter
 
 
 def create_app(env: str = None) -> Flask:
-    env = env or os.environ.get("FLASK_ENV", "development")
+    default_env = "production" if os.environ.get("RENDER") == "true" else "development"
+    env = env or os.environ.get("FLASK_ENV", default_env)
     app = Flask(__name__)
     app.config.from_object(config_map[env])
 

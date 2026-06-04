@@ -21,9 +21,8 @@ services:
         value: https://policost-frontend.onrender.com
 
   # 💻 Frontend Static Site (React + Vite)
-  - type: web
+  - type: static
     name: policost-frontend
-    env: static
     rootDir: policost/frontend
     buildCommand: npm install && npm run build
     publishPath: dist

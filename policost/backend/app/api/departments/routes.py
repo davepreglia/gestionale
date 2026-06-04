@@ -47,7 +47,28 @@ def update_department(dept_id):
     data = request.get_json(silent=True) or {}
     if "name" in data:
         dept.name = data["name"]
+    if "code" in data:
+        new_code = data["code"].upper()
+        if new_code != dept.code:
+            existing = Department.query.filter_by(code=new_code).first()
+            if existing:
+                return jsonify(error_response("Department code already exists.")[0]), 409
+            dept.code = new_code
     if "head_id" in data:
-        dept.head_id = data["head_id"]
+        dept.head_id = data["head_id"] if data["head_id"] else None
     db.session.commit()
     return jsonify(success_response(dept.to_dict())[0]), 200
+
+
+@departments_bp.delete("/departments/<int:dept_id>")
+@require_roles(ADMIN)
+def delete_department(dept_id):
+    dept = Department.query.get_or_404(dept_id)
+    if len(dept.projects) > 0:
+        return jsonify(error_response("Cannot delete department with active projects.")[0]), 400
+    for u in dept.users:
+        u.department_id = None
+    db.session.delete(dept)
+    db.session.commit()
+    return jsonify(success_response(None, "Department deleted successfully")[0]), 200
+

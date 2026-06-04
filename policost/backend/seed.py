@@ -18,6 +18,7 @@ import random
 def seed():
     app = create_app("development")
     with app.app_context():
+        db.create_all()
         print("Cleaning up existing database tables to prevent unique constraint conflicts...")
         
         # Delete in order of dependency to respect foreign keys

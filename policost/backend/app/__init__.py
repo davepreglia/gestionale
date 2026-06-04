@@ -1,22 +1,29 @@
 import os
 from flask import Flask
 from dotenv import load_dotenv
+load_dotenv()
 
 from .config import config_map
 from .extensions import db, migrate, jwt, cors, limiter
 
 
 def create_app(env: str = None) -> Flask:
-    load_dotenv()
     env = env or os.environ.get("FLASK_ENV", "development")
     app = Flask(__name__)
     app.config.from_object(config_map[env])
+
+    # Normalize database URI for SQLAlchemy (replace postgres:// with postgresql://)
+    db_uri = app.config.get("SQLALCHEMY_DATABASE_URI")
+    if db_uri and db_uri.startswith("postgres://"):
+        app.config["SQLALCHEMY_DATABASE_URI"] = db_uri.replace("postgres://", "postgresql://", 1)
 
     # ── Extensions ─────────────────────────────────────────────────────────
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
-    cors.init_app(app, resources={r"/api/*": {"origins": app.config["CORS_ORIGINS"]}},
+    origins_str = app.config["CORS_ORIGINS"]
+    origins = [o.strip() for o in origins_str.split(",")] if origins_str else "*"
+    cors.init_app(app, resources={r"/api/*": {"origins": origins}},
                   supports_credentials=True)
     limiter.init_app(app)
 

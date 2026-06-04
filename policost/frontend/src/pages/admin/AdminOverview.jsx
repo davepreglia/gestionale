@@ -5,7 +5,7 @@ import { PageLoader, EmptyState, StatCard, formatCurrency, ProgressBar } from '.
 import ExpenseTimeline from '../../components/charts/ExpenseTimeline'
 import CategoryBar from '../../components/charts/CategoryBar'
 import { 
-  BarChart3, Users, FolderKanban, ShieldAlert, Plus, Edit2, 
+  BarChart3, Users, FolderKanban, ShieldAlert, Plus, Edit2, Trash2,
   Eye, UserCheck, ChevronLeft, Search, Calendar, FileText, ArrowRight 
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -41,7 +41,7 @@ export default function AdminOverview() {
   const [selectedDept, setSelectedDept] = useState(null)
   
   // Form states
-  const [deptForm, setDeptForm] = useState({ name: '', head_id: '' })
+  const [deptForm, setDeptForm] = useState({ name: '', code: '', head_id: '' })
   const [createForm, setCreateForm] = useState({ name: '', code: '', head_id: '' })
   const [submitting, setSubmitting] = useState(false)
   const [modalError, setModalError] = useState('')
@@ -175,6 +175,7 @@ export default function AdminOverview() {
     setSelectedDept(dept)
     setDeptForm({
       name: dept.name,
+      code: dept.code,
       head_id: dept.head_id || ''
     })
     setModalError('')
@@ -188,6 +189,7 @@ export default function AdminOverview() {
     try {
       await departmentsApi.update(selectedDept.id, {
         name: deptForm.name,
+        code: deptForm.code.toUpperCase(),
         head_id: deptForm.head_id || null
       })
       const deptsRes = await departmentsApi.list()
@@ -206,6 +208,23 @@ export default function AdminOverview() {
       setModalError(err.response?.data?.message || t('error_updating_department'))
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  const handleDeleteDepartment = async (deptId, deptName, e) => {
+    if (e) e.stopPropagation()
+    const confirmMsg = t('confirm_delete_department', { defaultValue: `Sei sicuro di voler eliminare il dipartimento/ambiente ${deptName}?` })
+    if (window.confirm(confirmMsg)) {
+      try {
+        await departmentsApi.delete(deptId)
+        // Refresh data
+        loadData()
+        setViewingDept(null)
+      } catch (err) {
+        console.error(err)
+        const errMsg = err.response?.data?.message || t('error_deleting_department', { defaultValue: 'Impossibile eliminare il dipartimento/ambiente. Verifica che non abbia progetti attivi.' })
+        alert(errMsg)
+      }
     }
   }
 
@@ -313,13 +332,20 @@ export default function AdminOverview() {
                 </span>
               </p>
             </div>
-            <div>
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
               <button 
                 className="btn btn-secondary" 
                 onClick={(e) => handleEditOpen(viewingDept, e)}
                 style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
               >
                 <Edit2 size={15} /> {t('edit_department')}
+              </button>
+              <button 
+                className="btn btn-danger" 
+                onClick={(e) => handleDeleteDepartment(viewingDept.id, viewingDept.name, e)}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--danger)', borderColor: 'var(--danger)', color: 'white' }}
+              >
+                <Trash2 size={15} /> {t('delete_department', { defaultValue: 'Elimina' })}
               </button>
             </div>
           </div>
@@ -697,6 +723,19 @@ export default function AdminOverview() {
 
                 <div>
                   <label className="form-label" style={{ fontWeight: 600, display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem' }}>
+                    {t('department_code')} *
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    required
+                    value={deptForm.code}
+                    onChange={(e) => setDeptForm({ ...deptForm, code: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label" style={{ fontWeight: 600, display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem' }}>
                     {t('head_of_department')}
                   </label>
                   <select
@@ -866,6 +905,14 @@ export default function AdminOverview() {
                     >
                       <Edit2 size={15} />
                     </button>
+                    <button 
+                      className="btn btn-icon btn-ghost btn-sm text-danger" 
+                      title={t('delete')} 
+                      onClick={(e) => handleDeleteDepartment(dept.id, dept.name, e)}
+                      style={{ padding: '0.4rem', borderRadius: '6px', color: 'var(--danger)' }}
+                    >
+                      <Trash2 size={15} />
+                    </button>
                   </div>
                 </div>
 
@@ -968,6 +1015,19 @@ export default function AdminOverview() {
                   required
                   value={deptForm.name}
                   onChange={(e) => setDeptForm({ ...deptForm, name: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <label className="form-label" style={{ fontWeight: 600, display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem' }}>
+                  {t('department_code')} *
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  required
+                  value={deptForm.code}
+                  onChange={(e) => setDeptForm({ ...deptForm, code: e.target.value })}
                 />
               </div>
 
